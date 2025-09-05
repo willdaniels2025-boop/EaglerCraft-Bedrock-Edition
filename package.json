@@ -1,0 +1,13 @@
+{
+  "name": "eaglercraft-mobile",
+  "version": "1.0.0",
+  "displayName": "Eaglercraft Mobile",
+  "description": "Cordova project for voxel demo",
+  "scripts": {
+    "build:android": "cordova build android",
+    "prepare": "cordova prepare"
+  },
+  "devDependencies": {
+    "cordova": "^12.0.0"
+  }
+}
