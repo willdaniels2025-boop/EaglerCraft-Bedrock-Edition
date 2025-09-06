@@ -1,10 +1,8 @@
-name: Unzip, Build & Sign Eaglercraft Mobile
+name: Build & Sign Eaglercraft Mobile
 
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - "*.zip"
   workflow_dispatch: # allow manual trigger
 
 jobs:
@@ -14,25 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Install unzip
-        run: sudo apt-get install unzip -y
-
-      - name: Extract project zip
-        run: |
-          mkdir workspace
-          unzip '*.zip' -d workspace
-          rsync -a workspace/ Eaglercraft-Mobile/
-          rm -rf workspace
-          echo "✅ Unzipped project into Eaglercraft-Mobile/"
-
-      - name: Commit organized files
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "Auto-unzipped project"
-          git push || echo "No changes to commit"
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -64,31 +43,4 @@ jobs:
           fi
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-
-      # 📦 Save keystore for reuse
-      - name: Upload Keystore Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: eaglercraft-keystore
-          path: eaglercraft.keystore
-
-      # 📝 Create keystore.properties for Gradle
-      - name: Create keystore.properties
-        run: |
-          echo "storeFile=eaglercraft.keystore" > keystore.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
-
-      # ⚡ Build signed APK
-      - name: Build APK
-        run: ./gradlew assembleRelease
-
-      # 📤 Upload final APK
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: eaglercraft-mobile-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS
